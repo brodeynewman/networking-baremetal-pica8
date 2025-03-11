@@ -1,0 +1,61 @@
+#!/bin/bash
+#
+# lib/networking-baremetal
+# # Functions to control the configuration and operation of the **Networking Baremetal**
+
+# Dependencies:
+# (none)
+
+# Save trace setting
+_XTRACE_networking_baremetal_pica8=$(set +o | grep xtrace)
+set +o xtrace
+
+# Defaults
+# --------
+
+# networking-baremetal service
+networking_baremetal_pica8_REPO=${networking_baremetal_pica8_REPO:-${GIT_BASE}/openstack/networking-baremetal.git}
+networking_baremetal_pica8_BRANCH=${networking_baremetal_pica8_BRANCH:-master}
+
+networking_baremetal_pica8_DIR=${networking_baremetal_pica8_DIR:-$DEST/networking-baremetal}
+networking_baremetal_pica8_DATA_DIR=""$DATA_DIR/networking-baremetal""
+
+# Support entry points installation of console scripts
+networking_baremetal_pica8_BIN_DIR=$(get_python_exec_prefix)
+
+
+# Functions
+# ---------
+
+function install_networking_baremetal_pica8 {
+    setup_develop $networking_baremetal_pica8_DIR
+}
+
+
+function configure_networking_baremetal_pica8 {
+    if [[ -z "$Q_ML2_PLUGIN_MECHANISM_DRIVERS" ]]; then
+        Q_ML2_PLUGIN_MECHANISM_DRIVERS='baremetal'
+    else
+        if [[ ! $Q_ML2_PLUGIN_MECHANISM_DRIVERS =~ $(echo '\<baremetal\>') ]]; then
+            Q_ML2_PLUGIN_MECHANISM_DRIVERS+=',baremetal'
+        fi
+    fi
+    populate_ml2_config /$Q_PLUGIN_CONF_FILE ml2 mechanism_drivers=$Q_ML2_PLUGIN_MECHANISM_DRIVERS
+}
+
+function configure_networking_baremetal_pica8_neutron_agent {
+    configure_keystone_authtoken_middleware $NEUTRON_CONF ironic ironic
+    configure_placement_nova_compute $NEUTRON_CONF
+}
+
+function start_networking_baremetal_pica8_neutron_agent {
+    run_process ir-neutronagt "$networking_baremetal_pica8_BIN_DIR/ironic-neutron-agent"
+}
+
+function stop_networking_baremetal_pica8_neutron_agent {
+    stop_process ir-neutronagt
+}
+
+function cleanup_networking_baremetal_pica8 {
+    rm -rf $networking_baremetal_pica8_DATA_DIR
+}
