@@ -395,7 +395,7 @@ class NetconfPicoClient(base.BaseDeviceClient):
         return random.choice(list(available_aggregate_ids))
 
 
-class NetconfOpenConfigDriver(base.BaseDeviceDriver):
+class NetconfOpenConfigPica8Driver(base.BaseDeviceDriver):
 
     SUPPORTED_BOND_MODES = set().union(constants.NON_SWITCH_BOND_MODES,
                                        constants.LACP_BOND_MODES,

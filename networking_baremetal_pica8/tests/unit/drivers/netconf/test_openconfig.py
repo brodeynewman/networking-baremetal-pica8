@@ -289,10 +289,10 @@ class TestNetconfPicoClient(base.TestCase):
         self.assertIn(result, all_aggregate_ids)
 
 
-class TestNetconfOpenConfigDriver(base.TestCase):
+class TestNetconfOpenConfigPica8Driver(base.TestCase):
 
     def setUp(self):
-        super(TestNetconfOpenConfigDriver, self).setUp()
+        super(TestNetconfOpenConfigPica8Driver, self).setUp()
         self.device = 'foo'
         self.conf = self.useFixture(config_fixture.Config())
         self.conf.register_opts(config._opts + config._device_opts,
@@ -315,7 +315,7 @@ class TestNetconfOpenConfigDriver(base.TestCase):
         self.mock_client = mock_client.start()
         self.addCleanup(mock_client.stop)
 
-        self.driver = openconfig.NetconfOpenConfigDriver(self.device)
+        self.driver = openconfig.NetconfOpenConfigPica8Driver(self.device)
         self.mock_client.assert_called_once_with('foo')
         self.mock_client.reset_mock()
 
